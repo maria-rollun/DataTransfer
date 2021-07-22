@@ -25,10 +25,10 @@ class FieldData implements FactoryInterface
 		$metadataProvider = $this->getMetadataProvider($container);
 		$validatorManager = $this->getValidatorManager($container);
 		$fields = [];
-		foreach ($metadataProvider->getClassFields($type, $subset) as [$fieldName, $getter, $setter])
+		foreach ($metadataProvider->getClassFields($type, $subset) as [$fieldName, $sourceField, $getter, $setter])
 		{
 			$validator = $validatorManager->get(...$metadataProvider->getFieldValidator($type, $subset, $fieldName));
-			$fields[] = [$fieldName, $validator];
+			$fields[] = [$sourceField, $validator];
 		}
 		return new Validator\FieldData($fields);
 	}

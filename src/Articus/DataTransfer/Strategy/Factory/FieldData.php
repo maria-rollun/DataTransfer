@@ -30,10 +30,10 @@ class FieldData implements FactoryInterface
 		$metadataProvider = $this->getMetadataProvider($container);
 		$strategyManager = $this->getStrategyManager($container);
 		$typeFields = [];
-		foreach ($metadataProvider->getClassFields($type, $subset) as [$fieldName, $getter, $setter])
+		foreach ($metadataProvider->getClassFields($type, $subset) as [$fieldName, $sourceField, $getter, $setter])
 		{
 			$strategy = $strategyManager->get(...$metadataProvider->getFieldStrategy($type, $subset, $fieldName));
-			$typeFields[] = [$fieldName, $getter, $setter, $strategy];
+			$typeFields[] = [$fieldName, $sourceField, $getter, $setter, $strategy];
 		}
 		return new Strategy\FieldData($type, $typeFields, $extractStdClass);
 	}

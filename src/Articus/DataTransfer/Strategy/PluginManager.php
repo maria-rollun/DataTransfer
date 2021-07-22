@@ -11,13 +11,17 @@ class PluginManager extends AbstractPluginManager
 	protected $instanceOf = StrategyInterface::class;
 
 	protected $factories = [
+	    Chain::class => Factory\Chain::class,
 		FieldData::class => Factory\FieldData::class,
+        InnerField::class => Factory\InnerField::class,
 		NoArgObject::class => Factory\NoArgObject::class,
 		NoArgObjectList::class => Factory\NoArgObjectList::class,
 		Whatever::class => InvokableFactory::class,
 	];
 
 	protected $aliases = [
+	    'Chain' => Chain::class,
+        'InnerField' => InnerField::class,
 		'Object' => NoArgObject::class,
 		'object' => NoArgObject::class,
 		'ObjectArray' => NoArgObjectList::class,

@@ -56,14 +56,14 @@ class FieldData implements StrategyInterface
 		$result = ($this->extractStdClass) ? new \stdClass() : [];
 		$map = new Utility\MapAccessor($result);
 		$object = new Utility\PropertyAccessor($from);
-		foreach ($this->typeFields as [$fieldName, $getter, $setter, $strategy])
+		foreach ($this->typeFields as [$fieldName, $sourceField, $getter, $setter, $strategy])
 		{
 			/** @var StrategyInterface $strategy */
 			try
 			{
 				$rawValue = $object->get($getter);
 				$fieldValue = $strategy->extract($rawValue);
-				$map->set($fieldName, $fieldValue);
+				$map->set($sourceField, $fieldValue);
 			}
 			catch (InvalidData $e)
 			{
@@ -95,24 +95,24 @@ class FieldData implements StrategyInterface
 			));
 		}
 		$object = new Utility\PropertyAccessor($to);
-		foreach ($this->typeFields as [$fieldName, $getter, $setter, $strategy])
+		foreach ($this->typeFields as [$fieldName, $sourceField, $getter, $setter, $strategy])
 		{
 			/** @var StrategyInterface $strategy */
-			if ($map->has($fieldName))
-			{
-				try
-				{
-					$rawValue = $object->get($getter);
-					$fieldValue = $map->get($fieldName);
-					$strategy->hydrate($fieldValue, $rawValue);
-					$object->set($setter, $rawValue);
-				}
-				catch (InvalidData $e)
-				{
-					$violations = [Validator\FieldData::INVALID_INNER => [$fieldName => $e->getViolations()]];
-					throw new InvalidData($violations, $e);
-				}
-			}
+            try
+            {
+                $rawValue = $object->get($getter);
+                $fieldValue = $map->get($sourceField);
+                if ($strategy instanceof SetData) {
+                    $strategy->setData($from);
+                }
+                $strategy->hydrate($fieldValue, $rawValue);
+                $object->set($setter, $rawValue);
+            }
+            catch (InvalidData $e)
+            {
+                $violations = [Validator\FieldData::INVALID_INNER => [$fieldName => $e->getViolations()]];
+                throw new InvalidData($violations, $e);
+            }
 		}
 	}
 }

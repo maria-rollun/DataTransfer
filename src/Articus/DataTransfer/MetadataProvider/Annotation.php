@@ -9,6 +9,7 @@ use Articus\DataTransfer\FieldMetadataProviderInterface;
 use Articus\DataTransfer\Strategy;
 use Articus\DataTransfer\Validator;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Kenny1911\DoctrineInheritAnnotations\InheritAnnotationReader;
 use Zend\Cache\Storage\StorageInterface as CacheStorage;
 use Zend\Stdlib\FastPriorityQueue;
 
@@ -181,6 +182,7 @@ class Annotation implements ClassMetadataProviderInterface, FieldMetadataProvide
 
 		$classReflection = new \ReflectionClass($className);
 		$reader = new AnnotationReader();
+		$reader = new InheritAnnotationReader($reader);
 		//Read property annotations
 		$propertyFilter = \ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PRIVATE;
 		foreach ($classReflection->getProperties($propertyFilter) as $propertyReflection)
@@ -301,6 +303,8 @@ class Annotation implements ClassMetadataProviderInterface, FieldMetadataProvide
 						));
 					}
 					$subset[0] = [
+                        $propertyReflection->getName(), // fieldName = name of the property
+                        // sourceField = name of corresponding field in the source data
 						$annotation->field ?? $propertyReflection->getName(),
 						$this->calculatePropertyGetter($classReflection, $propertyReflection, $annotation),
 						$this->calculatePropertySetter($classReflection, $propertyReflection, $annotation),
